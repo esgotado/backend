@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "first version of esgotado backend",
+  "main": "app/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esgotado/backend.git"
+  },
+  "contributors": [
+    "Carlos Henrique",
+    "Iago",
+    "Lucas D'angelo",
+    "Matheus Vrech <whoismath@gmail.com>"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/esgotado/backend/issues"
+  },
+  "homepage": "https://github.com/esgotado/backend#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
