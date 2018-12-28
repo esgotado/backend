@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend entrypoints and libs for the app",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esgotado/backend.git"
+  },
+  "author": "Esgotado",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/esgotado/backend/issues"
+  },
+  "homepage": "https://github.com/esgotado/backend#readme",
+  "dependencies": {
+    "elasticsearch": "^15.2.0",
+    "get-json": "^1.0.1"
+  }
+}
