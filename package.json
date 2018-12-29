@@ -18,6 +18,7 @@
   "homepage": "https://github.com/esgotado/backend#readme",
   "dependencies": {
     "elasticsearch": "^15.2.0",
-    "get-json": "^1.0.1"
+    "get-json": "^1.0.1",
+    "mongodb": "^3.1.10"
   }
 }
