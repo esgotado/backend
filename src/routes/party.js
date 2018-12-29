@@ -40,16 +40,12 @@ router.get('/all', async (req, res) => {
 router.post('/', async (req, res) => {
     
     // Retrieve data
-    let entry = {
-        name            : req.body.name,
-        date            : req.body.date,
-        description     : req.body.description,       
-        drinks          : req.body.drinks,
-        admin           : req.body.admin,
-        active          : false
-    }
+    let entry = { name, data, description, drinks, admin, active } = req.body
+
     // Verify data
-    if (entry.name == null) res.status(412).send('name missing')
+    if (entry.name == null) res.status(412).json({
+        message: 'name missing' 
+    })
     else {    
         // Verify user
     
@@ -58,7 +54,9 @@ router.post('/', async (req, res) => {
     
         // Res
         if (ok == 1) res.status(500)
-        else res.status(200).send(`party created`)
+        else res.status(200).json({
+            message: 'party created'
+        })
     }
 })
 
@@ -66,14 +64,18 @@ router.delete('/', async (req, res) =>  {
     
     query = req.body
     await mongo.deleteData(query, 'party')
-    res.status(200).send('deleted')
+    res.status(200).json({
+        message: 'deleted'
+    } )
 
 })
 
 router.delete('/all', async (req, res) => {
 
     await mongo.deleteAll('party')
-    res.status(200).send('deleted')
+    res.status(200).json({
+        message: 'deleted'
+    } )
 
 })
 
@@ -86,7 +88,9 @@ router.put('/', async (req, res) => {
     }, {})
     
     // Verify data
-    if (entry.name == null) res.status(412).send('name missing')
+    if (entry.name == null) res.status(412).json({
+        message: 'name missing' 
+    })
     else {    
         // Verify host
     
@@ -95,7 +99,9 @@ router.put('/', async (req, res) => {
     
         // Res
         if (ok == 1) res.status(500)
-        else res.status(200).send(`party updated`)
+        else res.status(200).json({
+            message: 'party updated' 
+        })
     }
     
 })
