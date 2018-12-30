@@ -1,18 +1,20 @@
 {
-  "name": "party",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "dotenv": "^6.2.0",
-    "dotenvenc": "^1.0.4",
-    "elasticsearch": "^15.2.0",
-    "express": "^4.16.4",
-    "nodemon": "^1.18.9"
-  }
+    "name": "party",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "debug": "env DEBUG=1 nodemon index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^6.2.0",
+        "dotenvenc": "^1.0.4",
+        "elasticsearch": "^15.2.0",
+        "express": "^4.16.4",
+        "lodash": "^4.17.11",
+        "nodemon": "^1.18.9"
+    }
 }
