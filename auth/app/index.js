@@ -10,6 +10,12 @@ const jwtStrategy = require('./middlewares/jwt')
 
 const factory = () => {
     const { repositories, storages } = database.factory()
+
+    const personService = new PersonService(repositories.person, storages.person)
+
+    const services = {
+        person: personService
+    }
   
     /* create app */
     const app = express()
@@ -26,7 +32,7 @@ const factory = () => {
 
     /* auth route */
     app.post("/api/auth", (req, res) => {
-        let { user, pass } = req.body
+        const { user, pass } = req.body
 
         /* hard coding just to test auth issue */
         if (user === "vrechson") {
@@ -47,23 +53,10 @@ const factory = () => {
 
     /* create user */
     app.post("/api/auth/new/user", (req, res) => {
-        let { name, user, pass, collegeId } = req.body
+        const { name, pass, email, college_id } = req.body
 
-        /* hard coding just to test auth issue */
-        if (user === "vrechson") {
-            if (pass === "thisissafe") {
-                const opts = {
-                    expiresIn: 120
-                }
-                const secret = 'mustbeaenv' // change for a random string as enviroment var
-                const token = jwt.sign({ user }, secret, opts)
-                return res.status(200).json({
-                    message: "Authentication Success",
-                    token
-                })
-            }
-        }
-        return res.status(401).json({ message: "Authentication Failed" })
+        personService.create(name, pass, email, college_id)
+        return res.status(200).json({ message: "[App]: New user created." })
     })
 
     /* secure route */

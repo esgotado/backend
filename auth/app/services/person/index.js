@@ -20,10 +20,10 @@ class PersonService {
    * @param college_id Person's university
    * @returns {Promise<Object>}
    */
-  async create (name, pass, email, college_id) {
+  async create(name, pass, email, college_id) {
     /* must add some erros check */
-
-    var hashed_pass = bcrypt.hashSync(pass, 10);
+    console.log(pass)
+    let hashed_pass = bcrypt.hashSync(pass, 10)
     return this.$storage.create(name, hashed_pass, email, parseInt(college_id))
   }
 }
