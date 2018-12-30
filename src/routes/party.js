@@ -1,132 +1,133 @@
 // const   elasticsearch   = require('elasticsearch') 
 let     express             = require('express')
-let     mongo               = require('../db/mongo')
+let     database            = require('../database/es')
 let     router              = express.Router()
 
-let user        = 'iago'
-let passwrd     = 'iago_super_secure_pwd_shh'
-let mongoaddr   = 'localhost'
-let credentials = `${user}:${passwrd}`
-let db          = mongo.initialize('party')
+database.initialize()
 
 router.use(express.json())
 
+// Token is valid
+function tokenIsValid() {
+    return true
+}
+
+function validPartyEntry(entry) {
+    let { name, author, description } = entry
+    return name && author && description
+}
+
+function formatBody(body) {
+    let entry = {
+        name,
+        date, 
+        place,
+        place_visibility,
+        going,
+        author,
+        author_messages,
+        drinks,
+        description,
+        features,
+        pool,
+        pricing
+    } = body
+
+    return entry
+}
+
 router.get('/', async (req, res) => {
     
-    // Retrieve data
-    let query = req.query
-    // Verify user
+    // Only for dev use
+    try {
+        result = await database.getAll('party')
+        res.send(result)
+    } catch (e) {
+        res.status(e.statusCode).send(e.response)
+    }
 
-    // Request to db
-    result = await mongo.getData(query, 'party')
-    var validResult = await result.filter((elem) => {
-        console.log(elem)
-        return elem.active == true
-    })
-    // Res
+})
+
+router.get('/search', async (req, res) => {
     
+    // Request to db
+    try {
+        result = await database.getData(req.query, 'party')
+        var validResult = result.isArray ? await result.filter((elem) => {
+            console.log(elem)
+            return true // elem.active == true
+        }) : []
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e.response)
+    }
+    // Res
     res.send(validResult)
     
-})
-
-router.get('/all', async (req, res) => {
     
-    // Only for dev use
-    result = await mongo.getAll('party')
-    res.send(result)
+})
+
+router.get('/:id', async (req, res) => {
+    
+    // Request to db
+    try {
+        result = await database.getDataById({id: req.params.id}, 'party')
+        var validResult = await result.filter((elem) => {
+            return true // elem.active == true
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e.response)
+    }
+    // Res
+    res.send(validResult)
 
 })
 
+// Post a party
 router.post('/', async (req, res) => {
     
-    // Retrieve data
-    let entry = { name, data, description, drinks, admin, active } = req.body
-
-    // Verify data
-    if (entry.name == null) res.status(412).json({
-        message: 'name missing' 
-    })
-    else {    
-        // Verify user
-    
+    // Verify data and user
+    if (validPartyEntry(req.body) && tokenIsValid()) {
+        // Retrieve data
+        let entry = formatBody(req.body)
         // POST on db
-        ok = await mongo.createData(entry, 'party').ok
-    
+        let response = await database.createData(entry, 'party')
+        res.send(response)
         // Res
-        if (ok == 1) res.status(500)
-        else res.status(200).json({
-            message: 'party created'
-        })
-    }
-})
-
-router.delete('/', async (req, res) =>  {
-    
-    query = req.body
-    await mongo.deleteData(query, 'party')
-    res.status(200).json({
-        message: 'deleted'
-    } )
-
-})
-
-router.delete('/all', async (req, res) => {
-
-    await mongo.deleteAll('party')
-    res.status(200).json({
-        message: 'deleted'
-    } )
-
-})
-
-router.put('/', async (req, res) => {
-    
-    // Retrieve data
-    let entry = Object.keys(req.body).reduce((obj, key) => {
-        obj[key] = req.body[key];
-        return obj;
-    }, {})
-    
-    // Verify data
-    if (entry.name == null) res.status(412).json({
-        message: 'name missing' 
+    } else res.status(412).json({
+        message: 'some field is missing' 
     })
-    else {    
-        // Verify host
+
+})
+
+router.put('/:id', async (req, res) => {
     
-        // POST on db
-        ok = await mongo.updateData({name: entry.name}, entry, 'party').ok
-    
+    // Verify data and user
+    if (validPartyEntry(req.body) && tokenIsValid()) {
+        // Retrieve data
+        let entry = formatBody(req.body)
+        // PUT on db
+        response = await database.updateData({id: req.params.id}, entry, 'party')
+        let response = await database.createData(entry, 'party')
         // Res
-        if (ok == 1) res.status(500)
-        else res.status(200).json({
-            message: 'party updated' 
-        })
-    }
+        res.send(response)
+    } else res.status(412).json({
+        message: 'some field is missing' 
+    })
     
 })
+
+// Delete a party
+router.delete('/:id', async (req, res) =>  {
+    try {
+        let response = await database.deleteDataById({id: req.params.id}, 'party')
+        res.send(response)
+    } catch (e) {
+        res.status(400).send(e.response)
+    }
+
+})
+
 
 module.exports = router
-
-/* ES stuff
-let user        = process.env.ES_USR
-let passwrd     = process.env.ES_PSS
-let credentials = `${user}:${passwrd}`
-let elasticaddr = 'esgotado.app/elastic'
-
-console.log(`${credentials}@${elasticaddr}`)
-let client  = new elasticsearch.Client({
-    host: `${credentials}@${elasticaddr}`,
-    log: 'trace',
-})
-
-client.ping({
-    requestTimeout: 30000,
-}, async (error) => {
-    if (error) {
-        console.error('elasticsearch not working')
-    } else {
-        console.log('elasticsearch working')
-    }
-})
-*/

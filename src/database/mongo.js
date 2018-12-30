@@ -1,6 +1,5 @@
 const MongoClient   = require('mongodb')
-const ObjectId      = require('mongodb').ObjectID;
-let db;
+let db
 
 async function initialize(collection, dbAdress = 'localhost:27017', usr = null, pwd = null) {
 
@@ -13,54 +12,65 @@ async function initialize(collection, dbAdress = 'localhost:27017', usr = null, 
 
 async function createData(data, collection) { // Funcionando
 
-    return await db.collection(collection).insertOne(data);
+    return await db.collection(collection).insertOne(data)
 
 }
 
 async function createMultipleData(dataArray, collection) { // Funcionando
 
-    return await db.collection(collection).insertMany(dataArray);
+    return await db.collection(collection).insertMany(dataArray)
 
 }
 
 async function getData(data, collection) { // Funcionando
 
-    return await db.collection(collection).find(data).toArray();
+    return await db.collection(collection).find(data).toArray()
+}
+
+async function getDataById(data, collection) {
+
+    return await db.collection(collection).find({_id: MongoClient.ObjectID(data.id)}).toArray()
 }
 
 async function getAll(collection) { //Funcionando
 
-    return await db.collection(collection).find({}).toArray();
+    return await db.collection(collection).find({}).toArray()
 
 }
 
 async function deleteAll(collection) {  // Funcionando
 
-    return await db.collection(collection).deleteMany({});
+    return await db.collection(collection).deleteMany({})
 
 }
 
 async function deleteData(filter, collection) { // Funcionando
 
-    return await db.collection(collection).deleteOne(filter);
+    return await db.collection(collection).deleteOne(filter)
+
+}
+
+async function deleteDataById(filter, collection) {
+
+    return await db.collection(collection).deleteOne({_id: MongoClient.ObjectID(filter.id)})
 
 }
 
 async function deleteMultipleData(filter, collection) {
 
-    return await db.collection(collection).deleteMany(filter);
+    return await db.collection(collection).deleteMany(filter)
 
 }
 
 async function updateData(filter, update, collection) {
 
-    return await db.collection(collection).updateOne(filter, {$set: update}, {upsert: true});
+    return await db.collection(collection).updateOne(filter, {$set: update}, {upsert: true})
 
 }
 
 async function updateMultipleData(filter, update, collection) {
 
-    return await db.collection(collection).updateMany(filter, update);
+    return await db.collection(collection).updateMany(filter, update)
 }
 
 module.exports = {
@@ -69,10 +79,12 @@ module.exports = {
     createData,
     createMultipleData,
     getData,
+    getDataById,
     getAll,
     deleteAll,
     deleteData,
     deleteMultipleData,
+    deleteDataById,
     updateData,
     updateMultipleData
 
