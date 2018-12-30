@@ -22,8 +22,9 @@ class PersonService {
    */
   async create(name, pass, email, college_id) {
     /* must add some erros check */
-    console.log(pass)
     let hashed_pass = bcrypt.hashSync(pass, 10)
+    console.log("pass: " + hashed_pass + "\name: " + name + "\nemail " + email + "\nteam: " + college_id)
+   
     return this.$storage.create(name, hashed_pass, email, parseInt(college_id))
   }
 }

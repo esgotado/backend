@@ -7,7 +7,7 @@ const passport = require('passport')
 const database = require('./database')
 const PersonService = require('./services/person')
 const jwtStrategy = require('./middlewares/jwt')
-
+const bodyParser = require('body-parser')
 const factory = () => {
     const { repositories, storages } = database.factory()
 
@@ -19,7 +19,10 @@ const factory = () => {
   
     /* create app */
     const app = express()
-    app.use(express.json())
+
+    /* bodyParser because express.json() wasn't working */
+    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.json())
 
     /* strategies */
     passport.use(jwtStrategy)
@@ -35,6 +38,7 @@ const factory = () => {
         const { user, pass } = req.body
 
         /* hard coding just to test auth issue */
+
         if (user === "vrechson") {
             if (pass === "thisissafe") {
                 const opts = {
@@ -54,7 +58,7 @@ const factory = () => {
     /* create user */
     app.post("/api/auth/new/user", (req, res) => {
         const { name, pass, email, college_id } = req.body
-
+        console.log("pass: " + pass + "\nname: " + name + "\nemail " + email + "\nteam: " + college_id)
         personService.create(name, pass, email, college_id)
         return res.status(200).json({ message: "[App]: New user created." })
     })
