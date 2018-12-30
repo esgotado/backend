@@ -8,6 +8,7 @@ const database = require('./database')
 const PersonService = require('./services/person')
 const jwtStrategy = require('./middlewares/jwt')
 const bodyParser = require('body-parser')
+const config = require('../config')
 const factory = () => {
     const { repositories, storages } = database.factory()
 
@@ -45,7 +46,7 @@ const factory = () => {
             const opts = {
                 expiresIn: 120
             }
-            const secret = 'mustbeaenv' // change for a random string as enviroment var
+            const secret = config.SECRET_JWT
             const token = jwt.sign({ email, name, id_college }, secret, opts)
             return res.status(200).json({
                 message: "Authentication Success",

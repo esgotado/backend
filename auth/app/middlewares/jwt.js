@@ -1,11 +1,11 @@
 'use strict'
 
-const {Strategy, ExtractJwt} = require('passport-jwt')
-
+const { Strategy, ExtractJwt } = require('passport-jwt')
+const config = require('../../config')
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 
-    secretOrKey: 'mustbeaenv' // change for a random string as enviroment var
+    secretOrKey: config.SECRET_JWT
 }
 
 module.exports = new Strategy(opts, (jwt_payload, done) => {
