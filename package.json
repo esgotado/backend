@@ -20,6 +20,7 @@
     "dotenv": "^6.2.0",
     "dotenvenc": "^1.0.4",
     "elasticsearch": "^15.2.0",
+    "express": "^4.16.4",
     "get-json": "^1.0.1",
     "lodash": "^4.17.11",
     "mongodb": "^3.1.10"
