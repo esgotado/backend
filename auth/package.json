@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "scripts": {
+    "start": "node bin/start"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/esgotado/backend.git"
@@ -22,11 +25,12 @@
   },
   "homepage": "https://github.com/esgotado/backend#readme",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "bcrypt": "^3.0.3",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.1",
     "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0",
-    "uuid": "^3.3.2"
+    "passport-facebook": "^2.1.1",
+    "passport-jwt": "^4.0.0"
   }
 }
