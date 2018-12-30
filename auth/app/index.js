@@ -35,22 +35,22 @@ const factory = () => {
 
     /* auth route */
     app.post("/api/auth", (req, res) => {
-        const { user, pass } = req.body
+        const { email, pass } = req.body
 
         /* hard coding just to test auth issue */
+        const data = personService.identify(email, pass)
+        const { name, id_college } = data
 
-        if (user === "vrechson") {
-            if (pass === "thisissafe") {
-                const opts = {
-                    expiresIn: 120
-                }
-                const secret = 'mustbeaenv' // change for a random string as enviroment var
-                const token = jwt.sign({ user }, secret, opts)
-                return res.status(200).json({
-                    message: "Authentication Success",
-                    token
-                })
+        if (data !== false) {
+            const opts = {
+                expiresIn: 120
             }
+            const secret = 'mustbeaenv' // change for a random string as enviroment var
+            const token = jwt.sign({ email, name, id_college }, secret, opts)
+            return res.status(200).json({
+                message: "Authentication Success",
+                token
+            })
         }
         return res.status(401).json({ message: "Authentication Failed" })
     })
@@ -58,7 +58,7 @@ const factory = () => {
     /* create user */
     app.post("/api/auth/new/user", (req, res) => {
         const { name, pass, email, college_id } = req.body
-        console.log("pass: " + pass + "\nname: " + name + "\nemail " + email + "\nteam: " + college_id)
+        
         personService.create(name, pass, email, college_id)
         return res.status(200).json({ message: "[App]: New user created." })
     })
