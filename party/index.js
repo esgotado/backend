@@ -102,6 +102,18 @@ route.delete('/:id', async (req, res) => {
     }
 })
 
+// Search
+route.get('/search/:query', async (req, res) => {
+    let {
+        hits: { hits: results },
+    } = await db.search({
+        ...index_type,
+        q: req.params.query,
+    })
+    if (tokenIsValid) res.send(results)
+    else res.status(401)
+})
+
 // Debug server
 if (DEBUG) {
     const app = express()
