@@ -59,7 +59,7 @@ router.get('/search', async (req, res) => {
 					console.log(elem)
 					return true // elem.active == true
 			  })
-			: []
+			: result
 	} catch (e) {
 		console.log(e)
 		res.status(400).send(e.response)
@@ -72,9 +72,10 @@ router.get('/:id', async (req, res) => {
 	// Request to db
 	try {
 		result = await database.getDataById({ id: req.params.id }, 'party')
-		var validResult = await result.filter(elem => {
+		var validResult = result.isArray ? await result.filter(elem => {
 			return true // elem.active == true
-		})
+        }) 
+        : result
 	} catch (e) {
 		console.log(e)
 		res.status(400).send(e.response)
@@ -101,16 +102,15 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
 	// Verify data and user
-	if (validPartyEntry(req.body) && tokenIsValid()) {
+	if (tokenIsValid()) {
 		// Retrieve data
-		let entry = formatBody(req.body)
+		let entry = req.body
 		// PUT on db
-		response = await database.updateData(
+		let response = await database.updateById(
 			{ id: req.params.id },
 			entry,
 			'party'
 		)
-		let response = await database.createData(entry, 'party')
 		// Res
 		res.send(response)
 	} else

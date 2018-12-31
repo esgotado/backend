@@ -1,6 +1,6 @@
-// require('dotenv').load()
-// require('dotenvenc')(process.env.DOTENVENC_KEY)
-// require('dotenv').config()
+require('dotenv').load()
+require('dotenvenc')(process.env.DOTENVENC_KEY)
+require('dotenv').config()
 
 const es = require('elasticsearch')
 const _ = require('lodash')
@@ -27,14 +27,7 @@ async function createData(data, index) {
 	}
 }
 
-async function createMultipleData(dataArray, collection) {
-	// Funcionando
-
-	return [] //await db.collection(collection).insertMany(dataArray);
-}
-
 async function getData(data, index) {
-	// Funcionando
 
 	try {
 		let response = await db.get({
@@ -49,58 +42,116 @@ async function getData(data, index) {
 }
 
 async function getDataById(data, index) {
-	return getData(data, index)
+
+    return getData(data, index)
+    
 }
 
 async function getAll(index) {
-	//Funcionando
 
-	// let results = await db.search({
-	//     index: index,
-	//     body: {
-	//         query: {
-	//             match_all: {},
-	//         },
-	//     },
-	// })
-
-	return [] //results
+    try {
+		let response = await db.search({
+			index: index,
+			type: '_doc',
+			body: {
+                query: {
+                    match_all: {}
+                }
+            },
+		})
+		return response.hits.hits
+	} catch (e) {
+		return e
+    }
+    
 }
 
-async function deleteAll(collection) {
-	// Funcionando
+async function deleteAll(index) {
 
-	return [] //await db.collection(collection).deleteMany({});
+	return [] 
 }
 
-async function deleteData(filter, collection) {
-	// Funcionando
+async function deleteData(filter, index) {
 
-	return [] //await db.collection(collection).deleteOne(filter);
+    try {
+
+        response = await db.deleteByQuery({
+            index: index,
+            body: {
+                query: {
+                  ...filter
+                }
+            }
+        })
+        return response
+
+    } catch (e) {
+        return e
+    }
 }
 
-async function deleteMultipleData(filter, collection) {
-	return [] //await db.collection(collection).deleteMany(filter);
+async function deleteDataById(filter, index) {
+
+    return deleteData(filter, index)
+
 }
 
-async function updateData(filter, update, collection) {
-	return [] //await db.collection(collection).updateOne(filter, {$set: update}, {upsert: true});
+async function updateData(filter, update, index) {
+
+    try {
+
+        const response = await db.updateByQuery({
+            index: index,
+            type: '_doc',
+            body: {
+                query: {
+                    ...filter
+                },
+                update: {
+                    ...update
+                }
+            }
+        })
+
+        return response
+        
+    } catch (e) {
+        return e
+    }
+    
 }
 
-async function updateMultipleData(filter, update, collection) {
-	return [] //await db.collection(collection).updateMany(filter, update);
+async function updateById(filter, update, index) {
+    
+    try {
+        const response = await db.update({
+            index: index,
+            type: '_doc',
+            ...filter,
+            body: {
+                doc: {
+                    ...update
+                }
+            }
+        })
+        
+        return response
+
+    } catch (e) {
+        return e
+    }
+
 }
 
 module.exports = {
 	initialize,
 	createData,
-	createMultipleData,
 	getData,
 	getDataById,
 	getAll,
 	deleteAll,
-	deleteData,
-	deleteMultipleData,
-	updateData,
-	updateMultipleData,
+    deleteData,
+    deleteDataById,
+    updateData,
+    updateById
 }

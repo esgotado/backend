@@ -68,6 +68,11 @@ async function updateData(filter, update, collection) {
 
 }
 
+async function updateId(filter, update, collection) {
+
+    return updateData({_id: MongoClient.ObjectID(filter.id)}, update, collection)
+
+}
 async function updateMultipleData(filter, update, collection) {
 
     return await db.collection(collection).updateMany(filter, update)
@@ -86,6 +91,7 @@ module.exports = {
     deleteMultipleData,
     deleteDataById,
     updateData,
-    updateMultipleData
+    updateMultipleData,
+    updateId
 
 }
