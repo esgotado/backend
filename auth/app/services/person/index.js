@@ -21,7 +21,7 @@ class PersonService {
    * @returns {Promise<Object>}
    */
 
-  async create(name, pass, email, college_id) {
+  async createUser (name, pass, email, college_id) {
     /* must add some erros check */
 
     /* check if this user already exists */
@@ -29,38 +29,39 @@ class PersonService {
 
     /* don't let create two users with the same email */
     if (data !== null)
-       return
+       return { error: true, message: "This email was already taken" }
 
-    let hashed_pass = bcrypt.hashSync(pass, 10)
+    const hashed_pass = bcrypt.hashSync(pass, 10)
    
-    return this.$storage.create(name, hashed_pass, email, parseInt(college_id))
+    return this.$storage.create(name, hashed_pass, email, parseInt(college_id), 'user', 'client')
   }
 
   /**
-   * Creates a new person
+   * Auth an account
    * @param email Person's username
    * @param pass Person's password
    * @returns {Promise<Object>}
    */
 
-  async identify(email, pass) {
+  async identify (email, pass) {
     /* must add some erros check */
 
     /* check if this user already exists */
     const data = await this.$repository.findByEmail(email)
-
+    console.log(data)
     /* if don't has any user with this email just ignore them */
     if (data === null)
-      return false
+      return { error: true, message: "This email doesn't exist on our system" }
 
     /* if creds are not defined */
     if (!pass || !data.pass)
-      return false
+      return { error: true, message: "Username or password doesn't match" }
       
+    /* now we really check the validity */
     const validity = bcrypt.compareSync(pass, data.pass)
    
     if (validity === false)
-      return false
+      return { error: true, message: "Username or password doesn't match" }
    
     return data
   }

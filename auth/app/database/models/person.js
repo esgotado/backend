@@ -22,6 +22,14 @@ const properties = {
     college_id: {
         type: Number,
         required: true
+    },
+    claims: {
+        type: String,
+        required: true
+    },
+    aud: {
+        type: String,
+        required: true
     }
 }
 
