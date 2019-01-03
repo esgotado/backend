@@ -6,9 +6,12 @@ const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const database = require('./database')
 const PersonService = require('./services/person')
-const Strategies = require('./middlewares/strategies')
+const Strategies = require('./middlewares/strategies/local')
+const FacebookStrategy = require('./middlewares/strategies/facebook')
 const bodyParser = require('body-parser')
 const config = require('../config')
+
+/* factory */
 const factory = () => {
     const { repositories, storages } = database.factory()
 
@@ -23,6 +26,7 @@ const factory = () => {
 
     /* strategies */
     passport.use(Strategies)
+    //passport.use(FacebookStrategy.factory(personService))
 
     /* homepage route */
     app.get('/', (req, res) => {

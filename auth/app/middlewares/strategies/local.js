@@ -1,8 +1,7 @@
-
 'use strict'
 
 const { Strategy, ExtractJwt } = require('passport-jwt')
-const config = require('../../config')
+const config = require('../../../config')
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), 

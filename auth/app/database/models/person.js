@@ -30,6 +30,10 @@ const properties = {
     aud: {
         type: String,
         required: true
+    },
+    fb_id: {
+        type: String,
+        required: false
     }
 }
 
