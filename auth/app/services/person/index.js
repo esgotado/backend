@@ -31,15 +31,16 @@ class PersonService {
 		if (data !== null)
 			return {
 				code: 400,
-				error: '[ERROR] User already created.',
+				error: true,
+				message: '[ERROR] User already created.',
 			}
 
 		// check for required fields
 		if (!(name && pass && email))
 			return {
 				code: 400,
-				error: 'missing field',
-				x: 'field',
+				error: true,
+				message: 'missing field',
 			}
 
 		let hashed_pass = bcrypt.hashSync(pass, 10)
@@ -56,6 +57,29 @@ class PersonService {
 	}
 
 	/**
+	 * Find user data by email
+	 * @param email Person's email
+	 * @returns {Promise<Object>}
+	 */
+
+	async findByEmail(email) {
+		/* must add some erros check */
+		if (!email) return { error: true, message: 'Query for something' }
+
+		/* check if this user already exists */
+		const data = await this.$repository.findByEmail(email)
+
+		/* if don't has any user with this email just ignore them */
+		if (data === null)
+			return {
+				error: true,
+				message: "This email doesn't exist on our system",
+			}
+
+		return data
+	}
+
+	/**
 	 * Creates a new person
 	 * @param email Person's username
 	 * @param pass Person's password
@@ -69,14 +93,27 @@ class PersonService {
 		const data = await this.$repository.findByEmail(email)
 
 		/* if don't has any user with this email just ignore them */
-		if (data === null) return false
+		if (data === null)
+			return {
+				error: true,
+				message: "User doesn't exist",
+			}
 
 		/* if creds are not defined */
-		if (!pass || !data.pass) return false
+		if (!pass || !data.pass)
+			return {
+				error: true,
+				message: 'Password not informed',
+			}
 
 		const validity = bcrypt.compareSync(pass, data.pass)
 
-		return validity ? data : false
+		return validity
+			? data
+			: {
+					error: true,
+					message: 'Wrong password',
+			  }
 	}
 }
 

@@ -8,7 +8,8 @@ const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const database = require('./database_es')
 const PersonService = require('./services/person')
-const jwtStrategy = require('./middlewares/jwt')
+const Strategies = require('./middlewares/strategies/local')
+const FacebookStrategy = require('./middlewares/strategies/facebook')
 const bodyParser = require('body-parser')
 const config = require('../config')
 
@@ -28,11 +29,12 @@ const factory = () => {
 	app.use(bodyParser.json())
 
 	/* strategies */
-	passport.use(jwtStrategy)
+	passport.use(Strategies)
+	passport.use(FacebookStrategy.factory(personService))
 
 	/* homepage route */
 	app.get('/', (req, res) => {
-		res.send('You should hack more')
+		res.send('Hack me')
 		//console.log(res)
 	})
 
@@ -42,20 +44,36 @@ const factory = () => {
 
 		/* hard coding just to test auth issue */
 		const data = await personService.identify(email, pass)
-		const { name, id_college } = data
 
-		if (data !== false) {
+		if (data === undefined)
+			return res
+				.status(401)
+				.json({ error: true, message: 'Authentication failed' })
+
+		if (!data.error) {
+			const { name, college_id, claims, aud } = data
 			const opts = {
 				expiresIn: 120,
 			}
 			const secret = config.SECRET_JWT
-			const token = jwt.sign({ email, name, id_college }, secret, opts)
+			const token = jwt.sign(
+				{
+					email: email,
+					name: name,
+					id_college: college_id,
+					scopes: claims,
+					aud: aud,
+				},
+				secret,
+				opts
+			)
+
 			return res.status(200).json({
 				message: 'Authentication Success',
 				token,
 			})
 		}
-		return res.status(401).json({ message: 'Authentication Failed' })
+		return res.status(401).json(data)
 	})
 
 	/* create user */
@@ -77,6 +95,61 @@ const factory = () => {
 		passport.authenticate('jwt', { session: false }),
 		(req, res) => {
 			return res.status(200).send('Protected route :)')
+		}
+	)
+
+	app.get(
+		'/api/auth/facebook',
+		passport.authenticate('facebook', {
+			scope: ['email', 'public_profile'],
+		})
+	)
+
+	app.get(
+		'/api/auth/facebook/callback',
+		passport.authenticate('facebook', { session: false }),
+		async email => {
+			const data = await personService.findByEmail(email)
+
+			if (data === undefined)
+				return res
+					.status(401)
+					.json({ error: true, message: 'Authentication failed' })
+
+			if (!data.error) {
+				const { name, college_id, claims, aud } = data
+				const opts = {
+					expiresIn: 120,
+				}
+				const secret = config.SECRET_JWT
+				const token = jwt.sign(
+					{
+						email: email,
+						name: name,
+						id_college: college_id,
+						scopes: claims,
+						aud: aud,
+					},
+					secret,
+					opts
+				)
+
+				return res.status(200).json({
+					message: 'Authentication Success',
+					token,
+				})
+			}
+		}
+	)
+
+	/* check user jwt */
+	app.get(
+		'/api/auth/check',
+		passport.authenticate('jwt', { session: false }),
+		(req, res) => {
+			return res
+				.status(200)
+				.json({ error: false, message: 'Token verified' })
 		}
 	)
 
