@@ -1,11 +1,15 @@
-let express = require('express')
-let Database = require('./database/es')
-let router = express.Router()
+const 	express 	= require('express')
+const 	Database 	= require('./database/es')
+const 	Strategies 	= require('./middlewares/strategies/local')
+const	passport	= require('passport')
+const	logger		= require('morgan')
+let 	router 		= express.Router()
 
 // Database.connect()
 var Elastic = new Database('party')
 
 router.use(express.json())
+router.use(logger('dev'))
 
 // Token is valid
 function tokenIsValid() {
