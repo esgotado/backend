@@ -26,7 +26,7 @@ const factory = () => {
 
     /* strategies */
     passport.use(Strategies)
-    //passport.use(FacebookStrategy.factory(personService))
+    passport.use(FacebookStrategy.factory(personService))
 
     /* homepage route */
     app.get('/', (req, res) => {
@@ -61,11 +61,34 @@ const factory = () => {
         return res.status(401).json(data)
     })
 
+    app.get('/api/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
+
+    app.get('/api/auth/facebook/callback', passport.authenticate('facebook', { session: false }), async (email) => {
+
+        const data = await personService.findByEmail(email)
+
+        if (data === undefined)
+            return res.status(401).json({ error: true, message: "Authentication failed" })
+        
+        if (!data.error) {
+            const { name, college_id, claims, aud } = data
+            const opts = {
+                expiresIn: 120
+            }
+            const secret = config.SECRET_JWT
+            const token = jwt.sign({ email: email, name: name, id_college: college_id, scopes: claims, aud: aud }, secret, opts)
+
+            return res.status(200).json({
+                message: "Authentication Success",
+                token
+            })  
+    });
+
     /* create user */
     app.post("/api/auth/new/user", (req, res) => {
         const { name, pass, email, college_id } = req.body
         
-        personService.createUser(name, pass, email, college_id)
+        personService.createUser(name, pass, email, college_id, '')
         return res.status(200).json({ message: "New user created" })
     })
 

@@ -13,9 +13,18 @@ const opts = {
 
 
 const factory = (PersonService) => {
-    const Strategy =  new FacebookStrategy(opts, (access_token, refresh_token, profile, done) => {
-        console.log("nois")
-   
+    const Strategy = new FacebookStrategy(opts, async (access_token, refresh_token, profile, done) => {
+    //console.log(profile)
+    //console.log(emails[0].value)
+    const data = await PersonService.findByEmail(profile._json.email)
+
+    console.log(data)
+    
+    if (data.error === true && profile._json.email)
+        PersonService.createUser(profile._json.first_name + ' ' + profile._json.last_name, '', profile._json.email, 0, profile.id)
+    
+       
+
         return done(null, true)
     })
 

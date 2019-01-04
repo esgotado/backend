@@ -18,10 +18,11 @@ class PersonService {
    * @param pass Person's password
    * @param email Person's email
    * @param college_id Person's university
+   * @param fb_id Person's facebook id
    * @returns {Promise<Object>}
    */
 
-  async createUser (name, pass, email, college_id) {
+  async createUser (name, pass, email, college_id, fb_id) {
     /* must add some erros check */
 
     /* check if this user already exists */
@@ -33,7 +34,29 @@ class PersonService {
 
     const hashed_pass = bcrypt.hashSync(pass, 10)
    
-    return this.$storage.create(name, hashed_pass, email, parseInt(college_id), 'user', 'client')
+    return this.$storage.create(name, hashed_pass, email, parseInt(college_id), fb_id, 'user', 'client')
+  }
+
+
+  /**
+   * Find user data by email
+   * @param email Person's email
+   * @returns {Promise<Object>}
+   */
+
+  async findByEmail (email) {
+    /* must add some erros check */
+    if (!email)
+      return { error: true, message: "Query for something" }
+
+    /* check if this user already exists */
+    const data = await this.$repository.findByEmail(email)
+
+    /* if don't has any user with this email just ignore them */
+    if (data === null)
+      return { error: true, message: "This email doesn't exist on our system" }
+        
+    return data
   }
 
   /**
@@ -47,20 +70,13 @@ class PersonService {
     /* must add some erros check */
 
     /* check if this user already exists */
-    const data = await this.$repository.findByEmail(email)
-    console.log(data)
-    /* if don't has any user with this email just ignore them */
-    if (data === null)
-      return { error: true, message: "This email doesn't exist on our system" }
+    const data = await this.findByEmail(email)
 
     /* if creds are not defined */
     if (!pass || !data.pass)
       return { error: true, message: "Username or password doesn't match" }
-      
-    /* now we really check the validity */
-    const validity = bcrypt.compareSync(pass, data.pass)
-   
-    if (validity === false)
+
+    if (validity === false && data.error !== true)
       return { error: true, message: "Username or password doesn't match" }
    
     return data

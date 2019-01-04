@@ -8,3 +8,5 @@ COPY . .
 RUN npm install --production
 
 ENTRYPOINT [ "npm", "start" ]
+
+EXPOSE 3443
