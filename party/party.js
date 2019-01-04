@@ -1,6 +1,5 @@
 const 	express 	= require('express')
-const 	Database 	= require('./database/es')
-const 	Strategies 	= require('./middlewares/strategies/local')
+const 	Database 	= require('./src/database/es')
 const	passport	= require('passport')
 const	logger		= require('morgan')
 let 	router 		= express.Router()
