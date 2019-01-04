@@ -1,6 +1,6 @@
 const   express             = require('express')
 let     party               = require('./party/party') 
-let     auth                = require('./auth/auth')
+let     auth                = require('./auth/auth').factory()
 
 let port        = 3000
 let app         = express()

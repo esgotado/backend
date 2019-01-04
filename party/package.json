@@ -10,7 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/esgotado/backend.git"
   },
-  "author": "Esgotado",
+  "contributors": [
+    "Carlos Henrique",
+    "Iago Elias",
+    "Lucas D'angelo",
+    "Matheus Vrech <whoismath@gmail.com>"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/esgotado/backend/issues"
