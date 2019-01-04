@@ -24,8 +24,12 @@
   "dependencies": {
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
+    "dotenv": "^6.2.0",
+    "dotenvenc": "^1.0.4",
+    "elasticsearch": "^15.2.0",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
     "mongoose": "^5.4.1",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
