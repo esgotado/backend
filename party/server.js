@@ -1,5 +1,5 @@
 const   express             = require('express')
-let     party               = require('./src/routes/party') 
+let     party               = require('./src/party') 
 
 let port        = 3000
 let app         = express()

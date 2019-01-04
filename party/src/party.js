@@ -1,13 +1,9 @@
-// Env
-require('dotenv').load()
-require('dotenvenc')(process.env.DOTENVENC_KEY)
-require('dotenv').config()
-
 let express = require('express')
-let database = require('../database/es')
+let Database = require('./database/es')
 let router = express.Router()
 
-database.initialize()
+// Database.connect()
+var Elastic = new Database('party')
 
 router.use(express.json())
 
@@ -43,7 +39,7 @@ function formatBody(body) {
 router.get('/', async (req, res) => {
 	// Only for dev use
 	try {
-		result = await database.getAll('party')
+		result = await Elastic.get_all()
 		res.send(result)
 	} catch (e) {
 		res.status(e.statusCode).send(e.response)
@@ -53,7 +49,7 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
 	// Request to db
 	try {
-		result = await database.getData(req.query, 'party')
+		result = await Elastic.get(req.query)
 		var validResult = result.isArray
 			? await result.filter(elem => {
 					console.log(elem)
@@ -71,7 +67,7 @@ router.get('/search', async (req, res) => {
 router.get('/:id', async (req, res) => {
 	// Request to db
 	try {
-		result = await database.getDataById({ id: req.params.id }, 'party')
+		result = await Elastic.get({ id: req.params.id })
 		var validResult = result.isArray ? await result.filter(elem => {
 			return true // elem.active == true
         }) 
@@ -91,7 +87,7 @@ router.post('/', async (req, res) => {
 		// Retrieve data
 		let entry = formatBody(req.body)
 		// POST on db
-		let response = await database.createData(entry, 'party')
+		let response = await Elastic.create(entry)
 		res.send(response)
 		// Res
 	} else
@@ -106,10 +102,9 @@ router.put('/:id', async (req, res) => {
 		// Retrieve data
 		let entry = req.body
 		// PUT on db
-		let response = await database.updateById(
+		let response = await Elastic.update_id(
 			{ id: req.params.id },
 			entry,
-			'party'
 		)
 		// Res
 		res.send(response)
@@ -122,9 +117,8 @@ router.put('/:id', async (req, res) => {
 // Delete a party
 router.delete('/:id', async (req, res) => {
 	try {
-		let response = await database.deleteDataById(
+		let response = await Elastic.delete(
 			{ id: req.params.id },
-			'party'
 		)
 		res.send(response)
 	} catch (e) {
