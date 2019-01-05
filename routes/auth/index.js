@@ -78,24 +78,17 @@ route.post('/new/user', async (req, res) => {
 	else res.json(200, status)
 })
 
-/* secure route */
+/* facebook social login */
 route.get(
-	'/secure',
-	passport.authenticate('jwt', { session: false }),
-	(req, res) => {
-		return res.status(200).send('Protected route :)')
-	}
-)
-
-route.get(
-	'/api/auth/facebook',
+	'/facebook',
 	passport.authenticate('facebook', {
 		scope: ['email', 'public_profile'],
 	})
 )
 
+/* facebook callback */
 route.get(
-	'/api/auth/facebook/callback',
+	'/facebook/callback',
 	passport.authenticate('facebook', { session: false }),
 	async email => {
 		const { data } = await Person.get({ email })
@@ -131,9 +124,9 @@ route.get(
 	}
 )
 
-/* check user jwt */
+/* checking jwt validation */
 route.get(
-	'/api/auth/check',
+	'/check',
 	passport.authenticate('jwt', { session: false }),
 	(req, res) => {
 		return res.json(200, { error: false, message: 'Token verified' })
