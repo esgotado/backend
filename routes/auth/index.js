@@ -3,7 +3,11 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const { Person } = require('../../database')
-const { FacebookStrategy, LocalStrategy } = require('../../middlewares/')
+const {
+	FacebookStrategy,
+	LocalStrategy,
+	JWTAuthentication,
+} = require('../../middlewares/')
 const bodyParser = require('body-parser')
 const config = require('../../config')
 const logger = require('morgan')
@@ -39,7 +43,7 @@ route.post('/', async (req, res) => {
 	const { data, info } = await Person.check_password(email, pass)
 
 	if (!data)
-		return res.json(401, {
+		return res.status(401).json({
 			error: true,
 			info,
 			message: 'Authentication failed',
@@ -63,12 +67,12 @@ route.post('/', async (req, res) => {
 			opts
 		)
 
-		return res.json(200, {
+		return res.status(200).json({
 			message: 'Authentication Success',
 			token,
 		})
 	}
-	return res.json(401, data)
+	return res.status(401).json(data)
 })
 
 /* create user */
@@ -81,8 +85,8 @@ route.post('/new/user', async (req, res) => {
 		email,
 		college_id,
 	})
-	if (status.error) json(400, status)
-	else res.json(200, status)
+	if (status.error) res.status(401).json(status)
+	else res.status(200).json(status)
 })
 
 /* facebook social login */
@@ -123,7 +127,7 @@ route.get(
 				opts
 			)
 
-			return res.json(200, {
+			return res.json({
 				message: 'Authentication Success',
 				token,
 			})
@@ -134,9 +138,10 @@ route.get(
 /* checking jwt validation */
 route.get(
 	'/check',
-	passport.authenticate('local', { session: false }),
+	JWTAuthentication,
+	// passport.authenticate('jwt', { session: false }),
 	(req, res) => {
-		return res.json(200, { error: false, message: 'Token verified' })
+		return res.json({ error: false, message: 'Token verified' })
 	}
 )
 
