@@ -134,7 +134,7 @@ route.get(
 /* checking jwt validation */
 route.get(
 	'/check',
-	passport.authenticate('jwt', { session: false }),
+	passport.authenticate('local', { session: false }),
 	(req, res) => {
 		return res.json(200, { error: false, message: 'Token verified' })
 	}
