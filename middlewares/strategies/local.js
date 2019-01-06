@@ -10,6 +10,6 @@ const opts = {
 }
 
 module.exports = new Strategy(opts, (jwt_payload, done) => {
-	console.log(jwt_payload)
+	console.log('jwt_payload', jwt_payload)
 	return done(null, true)
 })
