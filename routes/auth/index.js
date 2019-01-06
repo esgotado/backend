@@ -6,6 +6,7 @@ const { Person } = require('../../database')
 const { FacebookStrategy, LocalStrategy } = require('../../middlewares/')
 const bodyParser = require('body-parser')
 const config = require('../../config')
+const logger = require('morgan')
 
 /* create app */
 const route = express.Router()
@@ -13,6 +14,12 @@ const route = express.Router()
 /* bodyParser because express.json() wasn't working */
 route.use(bodyParser.urlencoded({ extended: false }))
 route.use(bodyParser.json())
+route.use(logger('dev'))
+route.use((req, res, next) => {
+	console.log('HEADERS')
+	console.log(req.headers)
+	next()
+})
 
 /* strategies */
 passport.use(LocalStrategy)
