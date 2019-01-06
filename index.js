@@ -2,7 +2,7 @@ const express = require('express')
 let party = require('./routes/party')
 let auth = require('./routes/auth')
 
-let port = 3000
+let port = process.env.PORT || 3000
 let app = express()
 app.use('/party', party)
 app.use('/auth', auth)
