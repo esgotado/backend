@@ -11,7 +11,7 @@ const {
 const bodyParser = require('body-parser')
 const config = require('../../config')
 const logger = require('morgan')
-
+const cors = require('cors')
 /* create app */
 const route = express.Router()
 
@@ -24,7 +24,7 @@ route.use((req, res, next) => {
 	console.log(req.headers)
 	next()
 })
-
+route.use(cors())
 /* strategies */
 passport.use(LocalStrategy)
 passport.use(FacebookStrategy())
