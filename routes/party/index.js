@@ -2,38 +2,9 @@ const express = require('express')
 const logger = require('morgan')
 const { Party } = require('../../database')
 const router = express.Router()
-
+const { JWTAuthentication } = require('../../middlewares')
 router.use(express.json())
 router.use(logger('dev'))
-
-// Token is valid
-function tokenIsValid() {
-	return true
-}
-
-function validPartyEntry(entry) {
-	let { name, author, description } = entry
-	return name && author && description
-}
-
-function formatBody(body) {
-	let entry = ({
-		name,
-		date,
-		place,
-		place_visibility,
-		going,
-		author,
-		author_messages,
-		drinks,
-		description,
-		features,
-		pool,
-		pricing,
-	} = body)
-
-	return entry
-}
 
 router.get('/', async (req, res) => {
 	try {
@@ -66,23 +37,29 @@ router.get('/:id', async (req, res) => {
 })
 
 // Post a party
-router.post('/', async (req, res) => {
+router.post('/', JWTAuthentication, async (req, res) => {
 	// Verify data and user
-	if (validPartyEntry(req.body)) {
-		// Retrieve data
-		let entry = formatBody(req.body)
-		let response = await Party.index(entry)
-		// POST on db
-		res.send(response)
+	if (isAdmin(req)) {
+		if (validPartyEntry(req.body)) {
+			// Retrieve data
+			let entry = formatBody(req.body)
+			let response = await Party.index(entry)
+			// POST on db
+			res.send(response)
+		} else
+			res.status(412).json({
+				message: 'some field is missing',
+			})
 	} else
-		res.status(412).json({
-			message: 'some field is missing',
+		res.status(401).json({
+			error: true,
+			message: "you can't do that",
 		})
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', JWTAuthentication, async (req, res) => {
 	// Verify data and user
-	if (tokenIsValid()) {
+	if (isAdmin(req)) {
 		// Retrieve data
 		let entry = req.body
 		// PUT on db
@@ -90,19 +67,55 @@ router.put('/:id', async (req, res) => {
 		// Res
 		res.send(response)
 	} else
-		res.status(412).json({
-			message: 'some field is missing',
+		res.status(401).json({
+			error: true,
+			message: "you can't do that",
 		})
 })
 
 // Delete a party
-router.delete('/:id', async (req, res) => {
-	try {
-		let response = await Party.delete({ id: req.params.id })
-		res.send(response)
-	} catch (e) {
-		res.status(400).send(e.response)
-	}
+router.delete('/:id', JWTAuthentication, async (req, res) => {
+	if (isAdmin(req)) {
+		try {
+			let response = await Party.delete({ id: req.params.id })
+			res.send(response)
+		} catch (e) {
+			res.status(400).send(e.response)
+		}
+	} else
+		res.status(401).json({
+			error: true,
+			message: "you can't do that",
+		})
 })
+
+// Token is valid
+function isAdmin(req) {
+	return req.claims.indexOf('esgotado_admin') >= 0
+}
+
+function validPartyEntry(entry) {
+	let { name, author, description } = entry
+	return name && author && description
+}
+
+function formatBody(body) {
+	let entry = ({
+		name,
+		date,
+		place,
+		place_visibility,
+		going,
+		author,
+		author_messages,
+		drinks,
+		description,
+		features,
+		pool,
+		pricing,
+	} = body)
+
+	return entry
+}
 
 module.exports = router

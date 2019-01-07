@@ -67,7 +67,7 @@ module.exports = class Person {
 		let { data: person = null } = await Person.get({ email })
 		console.log('person', person)
 		if (person) {
-			if (person.pass) {
+			if (person.pass && password) {
 				return bcrypt.compareSync(password, person.pass)
 					? {
 							data: person,

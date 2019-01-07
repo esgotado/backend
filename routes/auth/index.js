@@ -51,20 +51,20 @@ route.post('/', async (req, res) => {
 
 	if (!data.error) {
 		const { name, college_id, claims, aud } = data
-		const opts = {
-			expiresIn: 120,
-		}
+		// const opts = {
+		// 	expiresIn: 120,
+		// }
 		const secret = config.SECRET_JWT
 		const token = jwt.sign(
 			{
 				email,
 				name,
 				college_id,
-				claims,
+				claims: claims.split(' '),
 				aud,
 			},
-			secret,
-			opts
+			secret
+			// opts
 		)
 
 		return res.status(200).json({
@@ -111,9 +111,9 @@ route.get(
 
 		if (!data.error) {
 			const { name, college_id, claims, aud } = data
-			const opts = {
-				expiresIn: 120,
-			}
+			// const opts = {
+			// 	expiresIn: 259200,
+			// }
 			const secret = config.SECRET_JWT
 			const token = jwt.sign(
 				{
@@ -123,8 +123,8 @@ route.get(
 					claims,
 					aud,
 				},
-				secret,
-				opts
+				secret
+				// opts
 			)
 
 			return res.json({
@@ -136,13 +136,8 @@ route.get(
 )
 
 /* checking jwt validation */
-route.get(
-	'/check',
-	JWTAuthentication,
-	// passport.authenticate('jwt', { session: false }),
-	(req, res) => {
-		return res.json({ error: false, message: 'Token verified' })
-	}
-)
+route.get('/check', JWTAuthentication, (req, res) => {
+	return res.json({ error: false, message: 'Token verified', user: req.user })
+})
 
 module.exports = route

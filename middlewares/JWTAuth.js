@@ -7,12 +7,13 @@ module.exports = (req, res, next) => {
 	let token = authorization.split(' ')[1]
 	try {
 		let user = jwt.verify(token, config.SECRET_JWT)
-		Object.assign(req, { user })
+		let { claims } = user
+		Object.assign(req, { user, claims })
+		next()
 	} catch (e) {
 		res.status(401).json({
 			error: true,
 			info: e,
 		})
 	}
-	next()
 }
