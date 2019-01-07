@@ -60,7 +60,7 @@ route.post('/', async (req, res) => {
 				email,
 				name,
 				college_id,
-				claims: claims.split(' '),
+				claims: claims ? claims.split(' ') : null,
 				aud,
 			},
 			secret
