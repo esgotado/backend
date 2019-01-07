@@ -77,13 +77,14 @@ route.post('/', async (req, res) => {
 
 /* create user */
 route.post('/new/user', async (req, res) => {
-	const { name, pass, email, college_id } = req.body
+	const { name, pass, email, claims, college_id } = req.body
 	console.log(req.body)
 	let status = await Person.index({
 		name,
 		pass,
 		email,
 		college_id,
+		claims,
 	})
 	if (status.error) res.status(401).json(status)
 	else res.status(200).json(status)

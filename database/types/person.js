@@ -97,7 +97,7 @@ module.exports = class Person {
 		let { data: person = null } = Person.get({ email: data.email })
 		if (!person)
 			try {
-				let { name, pass, email, college_id } = data
+				let { name, pass, email, college_id, claims } = data
 				if (name && pass && email)
 					return db.index({
 						index: 'person',
@@ -107,6 +107,7 @@ module.exports = class Person {
 							pass: bcrypt.hashSync(pass, 10),
 							email,
 							college_id,
+							claims,
 						},
 					})
 				return {
