@@ -1,9 +1,12 @@
 const db = require('../es_client')
 const bcrypt = require('bcrypt')
 const _ = require('lodash')
+const Doc = require('./doc')
 
-module.exports = class Person {
-	constructor() {}
+module.exports = class Person extends Doc {
+	constructor() {
+		super('person')
+	}
 	/**
 	 * Returns person data
 	 * @param {{id, email}} params email or id to search for person

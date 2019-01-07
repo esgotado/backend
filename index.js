@@ -1,6 +1,7 @@
-const express = require('express')
-let party = require('./routes/party')
-let auth = require('./routes/auth')
+const express 	= require('express')
+let party 		= require('./routes/party')
+let auth 		= require('./routes/auth')
+let logger 		= require('morgan')
 
 let port = process.env.PORT || 3000
 let app = express()

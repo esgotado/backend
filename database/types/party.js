@@ -1,99 +1,25 @@
 const db = require('../es_client')
 const _ = require('lodash')
+const Doc = require('./doc')
 
-module.exports = class Party {
-	constructor() {}
-
-	static async search(q) {
-		try {
-			let results = await db.search({
-				index: 'party',
-				type: '_doc',
-				body: { q },
-			})
-			return results.hits.hits
-		} catch (e) {
-			return {
-				error: true,
-				info: e,
-			}
-		}
+module.exports = class Party extends Doc {
+	constructor() {
+		super('party')
 	}
 
-	static async get(params) {
-		if (params.id) {
-			try {
-				let result = await db.get({
-					index: 'party',
-					type: '_doc',
-					id: params.id,
-				})
-				return result._source
-					? {
-							data: result._source,
-					  }
-					: {
-							error: true,
-							info: 'party not found',
-					  }
-			} catch (e) {
-				return {
-					error: true,
-					info: e,
-				}
-			}
-		}
-		return {
-			error: true,
-			info: 'no params given',
-		}
-	}
+	// Search doc by query 
+	static async search(q) { super.search(q, 'party') }
 
-	static async index(entry) {
-		try {
-			return await db.index({
-				index: 'party',
-				type: '_doc',
-				body: entry,
-			})
-		} catch (e) {
-			return {
-				error: true,
-				info: e,
-			}
-		}
-	}
+    // Get doc by id
+	static async get(params) { super.get(params, 'party') }
 
-	static async index(params) {
-		try {
-			let { id, doc } = params
-			return await db.update({
-				index: 'party',
-				type: '_doc',
-				id,
-				body: { doc },
-			})
-		} catch (e) {
-			return {
-				error: true,
-				info: e,
-			}
-		}
-	}
+    // Add a new entry
+	static async index(entry) { super.index(entry, 'party') }
 
-	static async index(params) {
-		try {
-			let { id } = params
-			return await db.delete({
-				index: 'party',
-				type: '_doc',
-				id,
-			})
-		} catch (e) {
-			return {
-				error: true,
-				info: e,
-			}
-		}
-	}
+    // Update an entry
+	static async update(params) { super.update(params, 'party') }
+
+    // Delete an entry
+	static async delete(params) { super.delete(params, 'party') }
+
 }
