@@ -97,7 +97,7 @@ module.exports = class Person extends Doc {
 	 * @return {any|{error,info}}
 	 */
 	static async index(data) {
-		let { data: person = null } = Person.get({ email: data.email })
+		let { data: person = null } = await Person.get({ email: data.email })
 		if (!person)
 			try {
 				let { name, pass, email, college_id, claims } = data
